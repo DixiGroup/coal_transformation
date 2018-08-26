@@ -1,5 +1,6 @@
 import xlrd
 import os
+import sys
 import re
 import csv
 from datetime import datetime
@@ -96,6 +97,15 @@ def dict_to_list(dict_, headers):
         l.append(new_l)
     return l
 
+if not os.path.exists("coal_extraction.log"):
+    f = open("coal_extraction", "w")
+    f.close()
+f = open("coal_extraction", "a")
+sys.stdout = f
+sys.stderr = f
+
+print("----------------")
+print(datetime.now())
 
 with open(FIELD_NAMES_FILE, 'r') as vf:
     var_reader = csv.reader(vf)
@@ -132,7 +142,7 @@ for i in range(len(sheet_dict['company'])):
 coal_list = dict_to_list(sheet_dict, HEADERS)
 coal_list = [coal_list[i] for i in indices]
 coal_list = sorted(coal_list, key=lambda x: x[0],reverse=True)
-with open(filename + ".csv", "w") as cfile:
+with open(filename + ".csv", "w", newline="") as cfile:
     csvwriter = csv.writer(cfile)
     csvwriter.writerow(HEADERS)
     for i in range(len(coal_list)):
@@ -157,3 +167,5 @@ for i in range(len(coal_list)):
             worksheet.write(i+1, j, coal_list[i][j])
 out_wb.close()
 
+print("No errors were caught")
+print("-----------------")
